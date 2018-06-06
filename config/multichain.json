@@ -1,0 +1,9 @@
+{
+    "config":
+        {
+        "port" : "2746",
+        "host" : "127.0.0.1",
+        "user" : "multichainrpc",
+        "pass" : "DJ7gaRd54qWs1tWjsq7H125EqkmqFvojNAGaHn5kr6BS"
+        }
+    }
