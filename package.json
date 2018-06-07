@@ -5,6 +5,7 @@
     "bluebird": "^3.5.1",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "mongoose": "^5.1.4",
     "multichain-node": "^2.1.6-version1.0.2",
     "multichainsdk": "^1.0.1"
   },
@@ -16,7 +17,7 @@
   "scripts": {
     "test": "node index.js"
   },
- "repository": {
+  "repository": {
     "type": "git",
     "url": "git+https://github.com/dhananjay-primechain/multichainsdk.git"
   },

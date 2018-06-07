@@ -11,8 +11,8 @@ exports.viewClaims = (assetName) => {
     console.log("inside claimAction asset")
     var assetDetails = [];
     let AuctionResponse = await bcSdk.listAssetsbyName({
-      asset:assetName
-  })
+        asset: assetName
+      })
 
       .then((res) => {
         console.log(res)

@@ -1,63 +1,62 @@
 'use strict';
 
-var express = require('express');
+const express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
+const uuidv4 = require('uuid/v4');
+const mongoose = require('mongoose');
 
-
-exports.claimAction = (assetName) => {
+exports.claimAction = (key ,fromAddress, assetName) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside claimAction asset")
     var assetDetails = [];
+    // var assetKey = Object.keys(assetName)
+    // var assets = assetKey[0]
+    let tx_hex = await bcSdk.listStreamKeyItems({
+      key : key,
+      stream :"primechain",
+      verbose : true
 
-    let lockunspentassets = await bcSdk.prepareLockUnspent({assets : assetName})
+    })
+    let decoderexchangeTX = await bcSdk.decodeRawExchange({
+      hexstring: tx_hex.response[0].data
+    })
+    
+    console.log(decoderexchangeTX)
+    
+    let secondunspent = await bcSdk.prepareLockUnspentFrom({
+      from: fromAddress,
+      assets: assetName
+    })
 
-    let rawexchange =  await bcSdk.createRawExchange({
-      txid : lockunspentassets.response.txid,
-      vout : lockunspentassets.response.vout,
+    let appendRaw = await bcSdk.appendRawExchange({
+      hexstring : tx_hex.response[0].data,
+      txid   : secondunspent.response.txid,
+      vout   : secondunspent.response.vout,
       assets : assetName
     })
 
-    let decoderexchangeTX = await bcSdk.decodeRawExchange({
-      hexstring : rawexchange.response
+    let completeTx = await bcSdk.sendRawTransaction({
+      hexstring : appendRaw.response.hex
     })
-
-
-    let rawExchnge = await bcSdk.completeRawExchange({
-      hexstring : rawexchange.response,
-      txid : lockunspentassets.response.txid,
-      vout : lockunspentassets.response.vout,
-      assets : assetName,
-      data : "Transaction Completed"
-
-    })
-
-      .then((rawExchnge) => {
-        console.log(rawExchnge)
-        // for (let i = 0; i < res.length; i++) {
-        //   assetDetails.push({
-
-        //   })
-        // }
+    
+      .then((completeTx) => {
         return resolve({
           status: 200,
-          query: rawExchnge
+          query: completeTx
         })
       })
 
       .catch(err => {
 
         if (err.code == 401) {
-
           return reject({
             status: 401,
             message: 'cant fetch !'
           });
-
         } else {
           console.log("error occurred" + JSON.stringify(err));
-
           return reject({
             status: 500,
             message: 'Internal Server Error !'
