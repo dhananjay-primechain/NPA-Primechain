@@ -10,9 +10,7 @@ const mongoose = require('mongoose');
 exports.claimAction = (key ,fromAddress, assetName) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside claimAction asset")
-    var assetDetails = [];
-    // var assetKey = Object.keys(assetName)
-    // var assets = assetKey[0]
+    
     let tx_hex = await bcSdk.listStreamKeyItems({
       key : key,
       stream :"primechain",
@@ -22,9 +20,7 @@ exports.claimAction = (key ,fromAddress, assetName) => {
     let decoderexchangeTX = await bcSdk.decodeRawExchange({
       hexstring: tx_hex.response[0].data
     })
-    
-    console.log(decoderexchangeTX)
-    
+        
     let secondunspent = await bcSdk.prepareLockUnspentFrom({
       from: fromAddress,
       assets: assetName

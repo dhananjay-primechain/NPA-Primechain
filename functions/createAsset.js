@@ -9,7 +9,7 @@ var bcSdk = require('multichainsdk');
 exports.createBid = (fromAddress, toAddress, assetName, quantity, amount) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside create asset")
-
+    // issues an asset to addressses with its quantity and units.
     let issue = await bcSdk.issueFrom({
       from: fromAddress,
       to: toAddress,
@@ -17,7 +17,7 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity, amount) => {
       qty: quantity,
       units: amount
     })
-
+    // after assets created it will subscribe to that assets.
     let subscribe = await bcSdk.subscribe({
         stream: assetName
       })

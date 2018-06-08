@@ -5,7 +5,7 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 const uuidv4 = require('uuid/v4');
-
+const bids = require ('../models/bids');
 
 exports.placeBid = (fromAddress, assetName, offerAsset) => {
   return new Promise(async function(resolve, reject) {
@@ -18,24 +18,28 @@ exports.placeBid = (fromAddress, assetName, offerAsset) => {
       from: fromAddress,
       assets: assetName
     })
-   
+    
     let rawexchange = await bcSdk.createRawExchange({
       txid : lockunspentassets.response.txid,
       vout : lockunspentassets.response.vout,
       assets : offerAsset
     })
     // data need to store into mongo
+    var claimId = await uuidv4();
 
-    // claimId : uuidv4(),
-    // assetName : asset,
-    // txid : lockunspentassets.response.txid,
-    // vout : lockunspentassets.response.vout
-
-
+    const placeBid = await new bids({
+    claimId : claimId,
+    assetName : asset_Ref,
+    txid : lockunspentassets.response.txid,
+    vout : lockunspentassets.response.vout,
+    });
+    placeBid.save() 
+    
+    console.log("claimId",claimId)
     // before storing data into blockchain  store claimId , assetName and assetsRef in mongo.
 
     let upload_toBlockchain = await bcSdk.publishRawHex({
-      key : uuidv4(),
+      key : claimId,
       value : rawexchange.response,
       stream :"primechain"
     })

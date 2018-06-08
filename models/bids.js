@@ -3,15 +3,18 @@
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://cluster0-gxxyr.mongodb.net:27017/NPA');
-var db = mongoose.connection
-console.log(db)
 
-const bidSchema = mongoose.Schema({
-   bidId:Number,
-   assetRef:Number,
-   ID:{ type: String, unique: true },
+const bidsSchema = mongoose.Schema({
+    claimId: String,
+    assetName: String,
+    txid: String,
+    vout: Number
 });
 
-module.exports = mongoose.model('bids', bidSchema);
+
+mongoose.Promise = global.Promise;
+//mongoose.connect('mongodb://localhost:27017/digitalId', { useMongoClient: true });
+
+mongoose.connect('mongodb+srv://jay:jay12345@cluster0-gxxyr.mongodb.net/NPA');
+
+module.exports = mongoose.model('bids', bidsSchema);
