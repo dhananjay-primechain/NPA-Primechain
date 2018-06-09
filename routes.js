@@ -15,7 +15,7 @@ module.exports = router => {
 
   // api/v-1.0/createAssets will create assets and autosubscribe it.
   router.post('/api/v-1.0/createAssets', (req, res) => {
-
+    
     var fromAddress = req.body.fromAddress;
     var toAddress = req.body.toAddress;
     var assetName = req.body.assetName;

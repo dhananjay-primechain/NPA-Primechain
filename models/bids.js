@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
 
 const bidsSchema = mongoose.Schema({
     claimId: String,
-    assetName: String,
+    assetName: Object,
+    offerAsset : Object,
     txid: String,
     vout: Number
 });

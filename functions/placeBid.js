@@ -29,7 +29,8 @@ exports.placeBid = (fromAddress, assetName, offerAsset) => {
 
     const placeBid = await new bids({
     claimId : claimId,
-    assetName : asset_Ref,
+    assetName : assetName,
+    offerAsset : offerAsset,
     txid : lockunspentassets.response.txid,
     vout : lockunspentassets.response.vout,
     });
