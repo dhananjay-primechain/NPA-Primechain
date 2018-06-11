@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var cors = require('cors');
 var multichain = require('multichainsdk')
+// functions path
 const createBid = require('./functions/createAsset')
 const claimAction = require('./functions/claimAction');
 const viewBids = require('./functions/viewBids');
@@ -11,18 +12,47 @@ const placeBid = require ('./functions/placeBid');
 const viewMyAssets = require ('./functions/viewMyAssets');
 const getClaimId = require ('./functions/getClaimId');
 const rejectclaim = require('./functions/rejectClaim');
+const viewMyBids = require ('./functions/viewMyBids');
+const login = require ('./functions/login');
+const cancelBid = require('./functions/cancelBid');
+const viewMyBalance = require ('./functions/viewMyBalance')
+// endpoints will be exposed to all web application
 module.exports = router => {
+  
+  // api/v-1.0/login
+
+  router.post('/api/v-1.0/login',(req,res)=>{
+    var emailId = req.body.email;
+
+    if(!emailId){
+      res.status(400).json({
+        message: 'Invalid Request'
+      })
+    }else{
+      login.login(emailId)
+      .then(result => {
+        res.status(result.status).json({
+          message: result.query
+        })
+      })
+
+      .catch(err => res.status(err.status).json({
+        message: err.message
+      }));
+    }
+  })
 
   // api/v-1.0/createAssets will create assets and autosubscribe it.
   router.post('/api/v-1.0/createAssets', (req, res) => {
-    
+
     var fromAddress = req.body.fromAddress;
     var toAddress = req.body.toAddress;
     var assetName = req.body.assetName;
     var quantity = req.body.quantity;
     var amount = req.body.amount;
+    // var hexfile = req.body.file;
     // exception logic to check any parameter is missing.
-    if (!assetName || !fromAddress || !key) {
+    if (!assetName || !fromAddress ||!toAddress||!quantity || !amount) {
       res.status(400).json({
         message: 'Invalid Request'
       });
@@ -92,6 +122,11 @@ module.exports = router => {
 
     const requestid1 = checkToken(req);
     const address = requestid1;
+    if(!address){
+      res.status(400).json({
+        message: 'Invalid Request'
+      });
+    }
 
     viewMyAssets.viewMyAssets(address)
 
@@ -167,9 +202,10 @@ module.exports = router => {
     }
   });
 
+  // /api/v-1.0/claimBid for customer to bid for an asset 
   router.post('/api/v-1.0/claimBid', (req, res) => {
 
-    var fromAddress = req.body.from;
+    var emailId = req.body.email;
     
     var assetName = req.body.assets;
    
@@ -177,13 +213,13 @@ module.exports = router => {
 
     // exception logic to check any parameter is missing.
 
-    if (!assetName || !fromAddress || !offerAsset) {
+    if (!assetName || !emailId || !offerAsset) {
       res.status(400).json({
         message: 'Invalid Request'
       });
     } else {
 
-      placeBid.placeBid(fromAddress,assetName,offerAsset)
+      placeBid.placeBid(emailId,assetName,offerAsset)
 
         .then(result => {
           res.status(result.status).json({
@@ -198,28 +234,31 @@ module.exports = router => {
     }
   });
 
-
+  // api/v-1.0/cancelBid for customer to cancel bid
   router.get('/api/v-1.0/cancelBid', (req, res) => {
 
-    if (!permissions || !permissions) {
-      res.status(400).json({
-        message: 'Invalid Request'
-      });
-    } else {
+    if (1 == 1) {
 
-      blockchainparams.getBlockChainParams(addresses, permissions)
-
+      const requestid1 = checkToken(req);
+      const claimId = requestid1;
+  
+      cancelBid.cancelBid(claimId)
+  
         .then(result => {
           res.status(result.status).json({
             message: result.query
-
           })
         })
-
+  
         .catch(err => res.status(err.status).json({
           message: err.message
         }));
-    }
+      }else{
+        res.status(401).json({
+          message: 'Assets are not yet created !'
+        });
+  
+      }
   });
 
   router.get('/api/v-1.0/viewClaims',(req,res)=>{
@@ -247,6 +286,58 @@ module.exports = router => {
   
       }
   })
+
+  router.get('/api/v-1.0/viewMyBids', (req,res)=>{
+
+  if (1 == 1) {
+
+      const requestid1 = checkToken(req);
+      const emailId = requestid1;
+  
+      viewMyBids.viewMyBids(emailId)
+  
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+          })
+        })
+  
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
+      }else{
+        res.status(401).json({
+          message: 'Assets are not yet created !'
+        });
+  
+      }
+  })
+
+  router.get('/api/v-1.0/viewMyBalance', (req,res)=>{
+
+    if (1 == 1) {
+  
+        const requestid1 = checkToken(req);
+        const emailId = requestid1;
+      console.log(emailId)
+        viewMyBalance.viewMyBalance(emailId)
+    
+          .then(result => {
+            res.status(result.status).json({
+              message: result.query
+            })
+          })
+    
+          .catch(err => res.status(err.status).json({
+            message: err.message
+          }));
+        }else{
+          res.status(401).json({
+            message: 'Assets are not yet created !'
+          });
+    
+        }
+    })
 
   function checkToken(req) {
 

@@ -3,18 +3,18 @@
 const bids = require('../models/bids');
 const bcsdk = require ('multichainsdk');
 
-exports.rejectClaim = (key) => {
+exports.cancelBid = (claimId) => {
   return new Promise(async function(resolve, reject) {
 
     let claimId_Details = await  bids.find({
-          "claimId": key
-        })
-    
+        "claimId": claimId
+      })
+  
     const bidStatus = await bids.findOneAndUpdate({
-      "claimId": claimId_Details[0].claimId
+      "claimId": claimId
     }, {
         $set: {
-            "status": "Rejected"
+            "status": "cancelled"
         }
     })
 

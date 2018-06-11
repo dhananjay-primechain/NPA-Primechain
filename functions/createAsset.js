@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 
 
-exports.createBid = (fromAddress, toAddress, assetName, quantity, amount) => {
+exports.createBid = (fromAddress, toAddress, assetName, quantity, amount ) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside create asset")
     // issues an asset to addressses with its quantity and units.
@@ -17,17 +17,28 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity, amount) => {
       qty: quantity,
       units: amount
     })
-    // after assets created it will subscribe to that assets.
-    let subscribe = await bcSdk.subscribe({
-        stream: assetName
-      })
+    // let uploadDocs_Blockchain = await bcSdk.publishRawHex({
+    //     key : assetName,
+    //     value : hexfile,
+    //     stream : "primeChain"
 
-      .then((res) => {
-        console.log("blockchain params " + JSON.stringify(res))
+    // })
+
+    // after assets created it will subscribe to that assets.
+    let subscribeAsset = await bcSdk.subscribe({
+        stream: assetName
+    })
+
+    let assetRef = await bcSdk.listAssetsbyName({
+      asset : assetName
+    })
+
+      .then((assetRef) => {
+        console.log("blockchain params " + JSON.stringify(assetRef))
 
         return resolve({
           status: 200,
-          query: res
+          query: assetRef
         })
       })
 

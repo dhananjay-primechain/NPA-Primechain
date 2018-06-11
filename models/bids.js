@@ -5,11 +5,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const bidsSchema = mongoose.Schema({
+    emailId : String,
     claimId: String,
     assetName: Object,
     offerAsset : Object,
     txid: String,
-    vout: Number
+    vout: Number,
+    status : String
 });
 
 

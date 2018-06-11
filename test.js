@@ -6,18 +6,22 @@
 //             random_no += possible.charAt(Math.floor(Math.random() * possible.length));
 //         console.log(random_no)
        
-var Models = require('./models/bids'); //Instantiate a Models object so you can access the models.js module.
+// var Models = require('./models/bids'); //Instantiate a Models object so you can access the models.js module.
 
- var data = new Models({ 
-     bidId:1211,
-     assetRef:94848
- });
+//  var data = new Models({ 
+//      bidId:1211,
+//      assetRef:94848
+//  });
  
- data.save(function(error) { 
-    console.log("Your bee has been saved.");
- if (error) {
-    console.error(error);
-   }
- });
+//  data.save(function(error) { 
+//     console.log("Your bee has been saved.");
+//  if (error) {
+//     console.error(error);
+//    }
+//  });
+
+setTimeout(function() {  
+    console.log("setInterval: Hey! 1 millisecond completed!..");   
+   }, 2000);  
 
  

@@ -13,7 +13,7 @@ exports.claimAction = (key ,fromAddress, assetName) => {
     
     let tx_hex = await bcSdk.listStreamKeyItems({
       key : key,
-      stream :"primechain",
+      stream :"NPA_CLAIM_STREAM",
       verbose : true
 
     })
@@ -32,7 +32,14 @@ exports.claimAction = (key ,fromAddress, assetName) => {
       vout   : secondunspent.response.vout,
       assets : assetName
     })
-
+    
+    const bidStatus = await bids.findOneAndUpdate({
+      "claimId": key
+    }, {
+        $set: {
+            "status": "Approved"
+        }
+    })
     let completeTx = await bcSdk.sendRawTransaction({
       hexstring : appendRaw.response.hex
     })

@@ -6,16 +6,21 @@ var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 const uuidv4 = require('uuid/v4');
 const bids = require ('../models/bids');
+const user = require('../models/users');
 
-exports.placeBid = (fromAddress, assetName, offerAsset) => {
+exports.placeBid = (emailId, assetName, offerAsset) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside create asset")
 
     var assetKey = Object.keys(assetName)
     var asset_Ref = assetKey[0]
-    
+   
+    let getAddress = await user.findOne({
+      "emailId": emailId
+    })
+
     let lockunspentassets = await bcSdk.prepareLockUnspentFrom({
-      from: fromAddress,
+      from: getAddress.address,
       assets: assetName
     })
     
@@ -26,14 +31,16 @@ exports.placeBid = (fromAddress, assetName, offerAsset) => {
     })
     // data need to store into mongo
     var claimId = await uuidv4();
-
+    
     const placeBid = await new bids({
-    claimId : claimId,
-    assetName : assetName,
-    offerAsset : offerAsset,
-    txid : lockunspentassets.response.txid,
-    vout : lockunspentassets.response.vout,
-    });
+            emailId : getAddress.emailId,
+            claimId : claimId,
+            assetName : assetName,
+            offerAsset : offerAsset,
+            txid : lockunspentassets.response.txid,
+            vout : lockunspentassets.response.vout,
+            status : "pending"
+    })
     placeBid.save() 
     
     console.log("claimId",claimId)
@@ -42,7 +49,7 @@ exports.placeBid = (fromAddress, assetName, offerAsset) => {
     let upload_toBlockchain = await bcSdk.publishRawHex({
       key : claimId,
       value : rawexchange.response,
-      stream :"primechain"
+      stream :"NPA_CLAIM_STREAM"
     })
 
     .then((upload_toBlockchain) => {

@@ -5,14 +5,12 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 
-exports.viewBids = (startCount, lastCount) => {
+exports.viewBids = () => {
   return new Promise(async function(resolve, reject) {
     console.log("inside viewBids asset")
     var assetDetails = [];
 
     let AuctionResponse = await bcSdk.listAssets({
-        start: startCount,
-        count: lastCount
       })
 
       .then((res) => {
