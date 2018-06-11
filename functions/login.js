@@ -31,7 +31,7 @@ exports.login = (emailId) => {
 
       let grantWritePermission = await bcSdk.grant({
           "addresses": newAddress.response[0].address,
-          "permissions": "primechain.write"
+          "permissions": "NPA_CLAIM_STREAM.write"
         })
 
         .then((newAddress) => {

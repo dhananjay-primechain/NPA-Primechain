@@ -15,7 +15,7 @@ const rejectclaim = require('./functions/rejectClaim');
 const viewMyBids = require ('./functions/viewMyBids');
 const login = require ('./functions/login');
 const cancelBid = require('./functions/cancelBid');
-const viewMyBalance = require ('./functions/viewMyBalance')
+const viewMyBalance = require ('./functions/viewMyBalance');
 // endpoints will be exposed to all web application
 module.exports = router => {
   
