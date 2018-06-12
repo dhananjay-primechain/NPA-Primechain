@@ -18,6 +18,13 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
     var off_ref = Object.keys(offerAsset)
     var offer_Asset = off_ref[0]
 
+    var assetAmount = Object.values(assetName)
+    var bidAmount = assetAmount[0]
+    console.log(bidAmount)
+
+    var offerAssetAmount = Object.values(offerAsset)
+    var offerAmount = offerAssetAmount[0]
+
     let subscribeAsset = await bcSdk.subscribe({
       stream: asset_Ref
     })
@@ -48,8 +55,9 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
             address : getAddress.address,
             claimId : claimId,
             assetName :asset_Ref,
-            assetDetails : assetName,
-            offerDetails : offerAsset,
+            offerAsset : offer_Asset,
+            bidAmount : bidAmount,
+            offerAmount : offerAmount,
             txid : lockunspentassets.response.txid,
             vout : lockunspentassets.response.vout,
             status : "pending"

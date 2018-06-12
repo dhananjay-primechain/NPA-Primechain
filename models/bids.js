@@ -9,8 +9,9 @@ const bidsSchema = mongoose.Schema({
     address : String,
     claimId : String,
     assetName : String,
-    assetDetails : Object,
-    offerDetails : Object,
+    offerAsset : String,
+    bidAmount : Number,
+    offerAmount : Number,
     txid: String,
     vout: Number,
     status : String
