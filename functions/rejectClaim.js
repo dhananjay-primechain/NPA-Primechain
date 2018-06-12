@@ -6,12 +6,12 @@ const bcsdk = require ('multichainsdk');
 exports.rejectClaim = (key) => {
   return new Promise(async function(resolve, reject) {
 
-    let claimId_Details = await  bids.find({
-          "claimId": key
-        })
+    // let claimId_Details = await  bids.find({
+    //       "claimId": key
+    //     })
     
     const bidStatus = await bids.findOneAndUpdate({
-      "claimId": claimId_Details[0].claimId
+      "claimId": key
     }, {
         $set: {
             "status": "Rejected"
