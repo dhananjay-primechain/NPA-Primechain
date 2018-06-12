@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 
 
-exports.createBid = (fromAddress, toAddress, assetName, quantity, amount ) => {
+exports.createBid = (fromAddress, toAddress, assetName, quantity ) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside create asset")
     // issues an asset to addressses with its quantity and units.
@@ -14,8 +14,7 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity, amount ) => {
       from: fromAddress,
       to: toAddress,
       asset: assetName,
-      qty: quantity,
-      units: amount
+      qty: quantity
     })
     // let uploadDocs_Blockchain = await bcSdk.publishRawHex({
     //     key : assetName,

@@ -49,15 +49,15 @@ module.exports = router => {
     var toAddress = req.body.toAddress;
     var assetName = req.body.assetName;
     var quantity = req.body.quantity;
-    var amount = req.body.amount;
+    // var amount = req.body.amount;
     // var hexfile = req.body.file;
     // exception logic to check any parameter is missing.
-    if (!assetName || !fromAddress ||!toAddress||!quantity || !amount) {
+    if (!assetName || !fromAddress ||!toAddress||!quantity) {
       res.status(400).json({
         message: 'Invalid Request'
       });
     } else {
-    createBid.createBid(fromAddress, toAddress, assetName, quantity, amount)
+    createBid.createBid(fromAddress, toAddress, assetName, quantity)
 
       .then(result => {
         res.status(result.status).json({
