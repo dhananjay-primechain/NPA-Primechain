@@ -10,27 +10,22 @@ exports.viewMyAssets = (address) => {
     console.log("inside viewMyassets")
     var assetDetails = [];
 
-    let AuctionResponse = await bcSdk.listAssets({
+    let AuctionResponse = await bcSdk.listAddressTransactions({
+      address : address
       })
 
-      .then((res) => {
-        console.log(res)
-        for (let i = 0; i < res.response.length; i++) {
+      .then((AuctionResponse) => {
+        console.log(AuctionResponse)
+        for (let i = 0; i < AuctionResponse.response.length; i++) {
+        if(AuctionResponse.response[i].issue.addresses[0] == address && AuctionResponse.response[i].name !="Transaction Tokens") {
 
-          if(res.response[i].name=="Transaction Tokens" ){
-            console.log("skipped TransactionToken")
-          } else if(res.response[i].issues[0].issuers[0] == address ) {
           assetDetails.push({
-            "name": res.response[i].name,
-            "issuers": res.response[i].issues[0].issuers[0],
-            "issuetxid": res.response[i].issuetxid,
-            "assetref": res.response[i].assetref,
-            "issuedqty": res.response[i].issueqty,
-            "units": res.response[i].units,
-            "subscribed": res.response[i].subscribed
+            "name":  AuctionResponse.response[i].issue.name,
+            "issuersAddress": AuctionResponse.response[i].addresses[0],
+            "assetref":  AuctionResponse.response[i].issue.assetref,
+            "issuedqty":  AuctionResponse.response[i].issue.qty,
           })
-        }
-        else{
+        } else{
             console.log("no Assets found")
         }
         }

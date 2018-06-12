@@ -14,7 +14,18 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
 
     var assetKey = Object.keys(assetName)
     var asset_Ref = assetKey[0]
-   
+    
+    var off_ref = Object.keys(offerAsset)
+    var offer_Asset = off_ref[0]
+
+    let subscribeAsset = await bcSdk.subscribe({
+      stream: asset_Ref
+    })
+    
+    let subscribeOfferAsset = await bcSdk.subscribe({
+      stream: offer_Asset
+    })
+
     let getAddress = await user.findOne({
       "emailId": emailId
     })
@@ -34,9 +45,11 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
     
     const placeBid = await new bids({
             emailId : getAddress.emailId,
+            address : getAddress.address,
             claimId : claimId,
-            assetName : assetName,
-            offerAsset : offerAsset,
+            assetName :asset_Ref,
+            assetDetails : assetName,
+            offerDetails : offerAsset,
             txid : lockunspentassets.response.txid,
             vout : lockunspentassets.response.vout,
             status : "pending"
@@ -49,7 +62,7 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
     let upload_toBlockchain = await bcSdk.publishRawHex({
       key : claimId,
       value : rawexchange.response,
-      stream :"NPA_CLAIM_STREAM"
+      stream :"primechain"
     })
 
     .then((upload_toBlockchain) => {

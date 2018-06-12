@@ -2,7 +2,6 @@
 var express = require('express');
 var router = express.Router();
 var cors = require('cors');
-var multichain = require('multichainsdk')
 // functions path
 const createBid = require('./functions/createAsset')
 const claimAction = require('./functions/claimAction');

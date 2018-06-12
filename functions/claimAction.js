@@ -4,7 +4,6 @@ const express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
-const uuidv4 = require('uuid/v4');
 const mongoose = require('mongoose');
 
 exports.claimAction = (key ,fromAddress, assetName) => {
