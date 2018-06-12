@@ -7,37 +7,37 @@ const createBid = require('./functions/createAsset')
 const claimAction = require('./functions/claimAction');
 const viewBids = require('./functions/viewBids');
 const viewClaims = require('./functions/viewClaims');
-const placeBid = require ('./functions/placeBid');
-const viewMyAssets = require ('./functions/viewMyAssets');
-const getClaimId = require ('./functions/getClaimId');
+const placeBid = require('./functions/placeBid');
+const viewMyAssets = require('./functions/viewMyAssets');
+const getClaimId = require('./functions/getClaimId');
 const rejectclaim = require('./functions/rejectClaim');
-const viewMyBids = require ('./functions/viewMyBids');
-const login = require ('./functions/login');
+const viewMyBids = require('./functions/viewMyBids');
+const login = require('./functions/login');
 const cancelBid = require('./functions/cancelBid');
-const viewMyBalance = require ('./functions/viewMyBalance');
+const viewMyBalance = require('./functions/viewMyBalance');
 // endpoints will be exposed to all web application
 module.exports = router => {
-  
+
   // api/v-1.0/login
 
-  router.post('/api/v-1.0/login',(req,res)=>{
+  router.post('/api/v-1.0/login', (req, res) => {
     var emailId = req.body.email;
 
-    if(!emailId){
+    if (!emailId) {
       res.status(400).json({
         message: 'Invalid Request'
       })
-    }else{
+    } else {
       login.login(emailId)
-      .then(result => {
-        res.status(result.status).json({
-          message: result.query
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+          })
         })
-      })
 
-      .catch(err => res.status(err.status).json({
-        message: err.message
-      }));
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
     }
   })
 
@@ -51,22 +51,22 @@ module.exports = router => {
     // var amount = req.body.amount;
     // var hexfile = req.body.file;
     // exception logic to check any parameter is missing.
-    if (!assetName || !fromAddress ||!toAddress||!quantity) {
+    if (!assetName || !fromAddress || !toAddress || !quantity) {
       res.status(400).json({
         message: 'Invalid Request'
       });
     } else {
-    createBid.createBid(fromAddress, toAddress, assetName, quantity)
+      createBid.createBid(fromAddress, toAddress, assetName, quantity)
 
-      .then(result => {
-        res.status(result.status).json({
-          message: result.query
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+          })
         })
-      })
 
-      .catch(err => res.status(err.status).json({
-        message: err.message
-      }));
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
     }
   })
 
@@ -92,7 +92,7 @@ module.exports = router => {
     }
   });
 
-// api/v-1.0/searchAssetsByName works as search assets by its name.
+  // api/v-1.0/searchAssetsByName works as search assets by its name.
   router.post('/api/v-1.0/searchAssetsByName', (req, res) => {
 
     var assetName = req.body.assetName;
@@ -101,44 +101,44 @@ module.exports = router => {
         message: 'Invalid Request'
       });
     } else {
-    viewClaims.viewClaims(assetName)
+      viewClaims.viewClaims(assetName)
 
-      .then(result => {
-        res.status(result.status).json({
-          message: result.query
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+          })
         })
-      })
 
-      .catch(err => res.status(err.status).json({
-        message: err.message
-      }));
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
     }
   });
-  
-//  api/v-1.0/viewMyAssets returns all the asset for the owner who created that asset.
+
+  //  api/v-1.0/viewMyAssets returns all the asset for the owner who created that asset.
   router.get('/api/v-1.0/viewMyAssets', (req, res) => {
     if (1 == 1) {
 
-    const requestid1 = checkToken(req);
-    const address = requestid1;
-    if(!address){
-      res.status(400).json({
-        message: 'Invalid Request'
-      });
-    }
+      const requestid1 = checkToken(req);
+      const address = requestid1;
+      if (!address) {
+        res.status(400).json({
+          message: 'Invalid Request'
+        });
+      }
 
-    viewMyAssets.viewMyAssets(address)
+      viewMyAssets.viewMyAssets(address)
 
-      .then(result => {
-        res.status(result.status).json({
-          message: result.query
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+          })
         })
-      })
 
-      .catch(err => res.status(err.status).json({
-        message: err.message
-      }));
-    }else{
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
+    } else {
       res.status(401).json({
         message: 'Assets are not yet created !'
       });
@@ -147,11 +147,11 @@ module.exports = router => {
 
   // api/v-1.0/approveClaim will accept the bid an complete the transaction. 
   router.post('/api/v-1.0/approveClaim', (req, res) => {
-    
+
     var key = req.body.claimId;
     var fromAddress = req.body.from;
     var assetName = req.body.assets;
-    
+
     // exception logic to check any parameter is missing.
 
     if (!assetName || !fromAddress || !key) {
@@ -160,25 +160,25 @@ module.exports = router => {
       });
     } else {
 
-    claimAction.claimAction(key ,fromAddress, assetName)
+      claimAction.claimAction(key, fromAddress, assetName)
 
-      .then(result => {
-        res.status(result.status).json({
-          message: result.query
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+          })
         })
-      })
 
-      .catch(err => res.status(err.status).json({
-        message: err.message
-      }));
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
     }
   });
-  
+
   // api/v-1.0/rejectClaim will unlock the assets and return the amount which is held during bid process.
   router.post('/api/v-1.0/rejectClaim', (req, res) => {
-    
+
     var key = req.body.claimId;
-    
+
     // exception logic to check any parameter is missing.
 
     if (!key || !key) {
@@ -186,18 +186,18 @@ module.exports = router => {
         message: 'Invalid Request'
       });
     } else {
-      
+
       rejectclaim.rejectClaim(key)
 
-      .then(result => {
-        res.status(result.status).json({
-          message: result.query
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+          })
         })
-      })
 
-      .catch(err => res.status(err.status).json({
-        message: err.message
-      }));
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
     }
   });
 
@@ -205,10 +205,10 @@ module.exports = router => {
   router.post('/api/v-1.0/claimBid', (req, res) => {
 
     var emailId = req.body.email;
-    
+
     var assetName = req.body.assets;
-   
-    var offerAsset =req.body.offer_assets;
+
+    var offerAsset = req.body.offer_assets;
 
     // exception logic to check any parameter is missing.
 
@@ -218,7 +218,7 @@ module.exports = router => {
       });
     } else {
 
-      placeBid.placeBid(emailId,assetName,offerAsset)
+      placeBid.placeBid(emailId, assetName, offerAsset)
 
         .then(result => {
           res.status(result.status).json({
@@ -240,103 +240,103 @@ module.exports = router => {
 
       const requestid1 = checkToken(req);
       const claimId = requestid1;
-  
+
       cancelBid.cancelBid(claimId)
-  
+
         .then(result => {
           res.status(result.status).json({
             message: result.query
           })
         })
-  
+
         .catch(err => res.status(err.status).json({
           message: err.message
         }));
-      }else{
-        res.status(401).json({
-          message: 'Assets are not yet created !'
-        });
-  
-      }
+    } else {
+      res.status(401).json({
+        message: 'Assets are not yet created !'
+      });
+
+    }
   });
 
-  router.get('/api/v-1.0/viewClaims',(req,res)=>{
+  router.get('/api/v-1.0/viewClaims', (req, res) => {
 
     if (1 == 1) {
 
       const requestid1 = checkToken(req);
       const assetName = requestid1;
-  
+
       getClaimId.getClaimId(assetName)
-  
+
         .then(result => {
           res.status(result.status).json({
             message: result.claimId
           })
         })
-  
+
         .catch(err => res.status(err.status).json({
           message: err.message
         }));
-      }else{
-        res.status(401).json({
-          message: 'Assets are not yet created !'
-        });
-  
-      }
+    } else {
+      res.status(401).json({
+        message: 'Assets are not yet created !'
+      });
+
+    }
   })
 
-  router.get('/api/v-1.0/viewMyBids', (req,res)=>{
+  router.get('/api/v-1.0/viewMyBids', (req, res) => {
 
-  if (1 == 1) {
+    if (1 == 1) {
 
       const requestid1 = checkToken(req);
       const emailId = requestid1;
-  
+
       viewMyBids.viewMyBids(emailId)
-  
+
         .then(result => {
           res.status(result.status).json({
             message: result.query
           })
         })
-  
+
         .catch(err => res.status(err.status).json({
           message: err.message
         }));
-      }else{
-        res.status(401).json({
-          message: 'Assets are not yet created !'
-        });
-  
-      }
+    } else {
+      res.status(401).json({
+        message: 'Assets are not yet created !'
+      });
+
+    }
   })
 
-  router.get('/api/v-1.0/viewMyBalance', (req,res)=>{
+  router.get('/api/v-1.0/viewMyBalance', (req, res) => {
 
     if (1 == 1) {
-  
-        const requestid1 = checkToken(req);
-        const emailId = requestid1;
+
+      const requestid1 = checkToken(req);
+      const emailId = requestid1;
       console.log(emailId)
-        viewMyBalance.viewMyBalance(emailId)
-    
-          .then(result => {
-            res.status(result.status).json({
-              message: result.query
-            })
+      viewMyBalance.viewMyBalance(emailId)
+
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
           })
-    
-          .catch(err => res.status(err.status).json({
-            message: err.message
-          }));
-        }else{
-          res.status(401).json({
-            message: 'Assets are not yet created !'
-          });
-    
-        }
-    })
+        })
+
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
+    } else {
+      res.status(401).json({
+        message: 'Assets are not yet created !'
+      });
+
+    }
+  })
 
   function checkToken(req) {
 
@@ -344,14 +344,14 @@ module.exports = router => {
 
     if (token) {
 
-        try {
-             (token.length!=0)
-             return token
-        } catch (err) {
-            return false;
-        }
-    } else {
+      try {
+        (token.length != 0)
+        return token
+      } catch (err) {
         return false;
+      }
+    } else {
+      return false;
     }
-}
+  }
 }

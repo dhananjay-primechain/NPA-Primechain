@@ -32,7 +32,7 @@ exports.login = (emailId) => {
       let grantWritePermission = await bcSdk.grant({
           "addresses": newAddress.response[0].address,
           "permissions": "NPA_CLAIM_STREAM.write"
-        })
+      })
 
         .then((newAddress) => {
           console.log("blockchain params " + JSON.stringify(newAddress))

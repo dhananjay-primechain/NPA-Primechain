@@ -23,7 +23,7 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity) => {
 
     let subscribeStream = await bcSdk.subscribe({
       // change before push "ENTITY_MASTERLIST_STREAM"
-      stream: "ENTITY_MASTER_STREAM"
+      stream: "ENTITY_MASTERLIST_STREAM"
     })
 
     // let subscribeMAsterStream = await bcSdk.subscribe({
@@ -60,7 +60,7 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity) => {
     let publishToBlockchain = await bcSdk.publish({
       key: toAddress,
       value: JSON.stringify(data),
-      stream: "ENTITY_MASTER_STREAM"
+      stream: "ENTITY_MASTERLIST_STREAM"
     }).then((publishToBlockchain) => {
       console.log("blockchain params " + JSON.stringify(publishToBlockchain))
 
