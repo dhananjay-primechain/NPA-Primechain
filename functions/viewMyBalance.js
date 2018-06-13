@@ -5,14 +5,14 @@ var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk')
 const user = require('../models/users');
 
-exports.viewMyBalance = (emailId) => {
+exports.viewMyBalance = () => {
   return new Promise(async function (resolve, reject)  {
 
-    let getAddress = await  user.find({
-          "emailId": emailId
-        })
-    let getBalance =  await bcSdk.getAddressBalances({
-           "address": getAddress[0].address
+    // let getAddress = await  user.find({
+    //       "emailId": emailId
+    //     })
+    let getBalance =  await bcSdk.getTotalBalances({
+          //  "address": getAddress[0].address
 
     })
        

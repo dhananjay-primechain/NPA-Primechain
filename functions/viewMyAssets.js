@@ -10,10 +10,15 @@ exports.viewMyAssets = (address) => {
   return new Promise(async function (resolve, reject) {
     console.log("inside viewMyassets")
     var assetDetails = [];
+    
+    let subscribeStream = await bcSdk.subscribe({
+      // change before push "ENTITY_MASTERLIST_STREAM"
+      stream: "ENTITY_MASTERLIST_STREAM"
+    })
 
     let AuctionResponse = await bcSdk.listStreamKeyItemsStream({
       key: address,
-      stream: "ENTITY_MASTER_STREAM"
+      stream: "ENTITY_MASTERLIST_STREAM"
     })
     
       .then((AuctionResponse) => {

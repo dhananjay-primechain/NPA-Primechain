@@ -4,19 +4,38 @@ const bids = require('../models/bids');
 
 exports.getClaimId = (assetName) => {
   return new Promise((resolve, reject) => {
-
-      bids.find({
-          "assetName": assetName
-        })
-        .then((res) => {
-          console.log(res)
-
-          return resolve({
-            status: 201,
-            claimId: res
-          })
-        })
+    var claimIds = [];
+    bids.find({
+      "offerAsset": assetName
     })
+
+      .then((res) => {
+        for (let i = 0; i < res.length; i++) {
+          if (res[i].status != "cancelled" && res[i].status !="Approved" && res[i].status !="Rejected") {
+            claimIds.push({
+              emailId: res[i].emailId,
+              address: res[i].address,
+              claimId: res[i].claimId,
+              assetName: res[i].assetName,
+              offerAsset: res[i].offerAsset,
+              bidAmount: res[i].bidAmount,
+              offerAmount: res[i].offerAmount,
+              txid: res[i].txid,
+              vout: res[i].vout,
+              status: res[i].status
+            })
+
+          } else {
+            console.log("NO bids")
+          }
+          console.log(claimIds)
+        }
+        return resolve({
+          status: 201,
+          claimId: claimIds
+        })
+      })
+  })
 
     .catch(err => {
 

@@ -15,6 +15,7 @@ const viewMyBids = require('./functions/viewMyBids');
 const login = require('./functions/login');
 const cancelBid = require('./functions/cancelBid');
 const viewMyBalance = require('./functions/viewMyBalance');
+const updateStatus = require('./functions/updateStatus');
 // endpoints will be exposed to all web application
 module.exports = router => {
 
@@ -76,7 +77,7 @@ module.exports = router => {
     if (1 == 1) {
 
       viewBids.viewBids()
-        .then(function(result) {
+        .then(function (result) {
           return res.status(200).json({
             "data": result.query
           });
@@ -151,16 +152,17 @@ module.exports = router => {
     var key = req.body.claimId;
     var fromAddress = req.body.from;
     var assetName = req.body.assets;
+    var offerAssetName = req.body.offerAsset;
 
     // exception logic to check any parameter is missing.
 
-    if (!assetName || !fromAddress || !key) {
+    if (!assetName || !fromAddress || !offerAssetName || !key) {
       res.status(400).json({
         message: 'Invalid Request'
       });
     } else {
 
-      claimAction.claimAction(key, fromAddress, assetName)
+      claimAction.claimAction(key, fromAddress, assetName, offerAssetName)
 
         .then(result => {
           res.status(result.status).json({
@@ -316,10 +318,10 @@ module.exports = router => {
 
     if (1 == 1) {
 
-      const requestid1 = checkToken(req);
-      const emailId = requestid1;
-      console.log(emailId)
-      viewMyBalance.viewMyBalance(emailId)
+      // const requestid1 = checkToken(req);
+      // const emailId = requestid1;
+      // console.log(emailId)
+      viewMyBalance.viewMyBalance()
 
         .then(result => {
           res.status(result.status).json({
@@ -338,6 +340,32 @@ module.exports = router => {
     }
   })
 
+  router.post('/api/v-1.0/updateStatus', (req, res) => {
+
+    var key = req.body.claimId;
+
+    if (!key) {
+      res.status(400).json({
+        message: 'Invalid Request'
+      });
+    } else {
+
+      updateStatus.updateStatus(key)
+
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+
+          })
+        })
+
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
+    }
+
+
+  })
   function checkToken(req) {
 
     const token = req.headers['authorization'];

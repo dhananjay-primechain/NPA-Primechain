@@ -17,7 +17,7 @@ exports.viewMyBids = (emailId) => {
             bidsDetails.push({
               "emailId":claim_Details[i].emailId,
               "claimId":claim_Details[i].claimId,
-              "assetPurchase":claim_Details[i].assetName,
+              "assetPurchase":claim_Details[i].offerAsset,
               "bidAmount": claim_Details[i].bidAmount,
               "assetOffered":claim_Details[i].offerAsset,
               "offerAmount" : claim_Details[i].offerAmount,

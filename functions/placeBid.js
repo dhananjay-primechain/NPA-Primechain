@@ -37,6 +37,10 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
       "emailId": emailId
     })
 
+    let importAddress = await bcSdk.importAddress({
+      address : getAddress.address
+    })
+
     let lockunspentassets = await bcSdk.prepareLockUnspentFrom({
       from: getAddress.address,
       assets: assetName
@@ -70,7 +74,7 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
     let upload_toBlockchain = await bcSdk.publishRawHex({
       key : claimId,
       value : rawexchange.response,
-      stream :"primechain"
+      stream :"NPA_CLAIM_STREAM"
     })
 
     .then((upload_toBlockchain) => {

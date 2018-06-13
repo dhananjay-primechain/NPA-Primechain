@@ -20,7 +20,7 @@ exports.login = (emailId) => {
 
       let grantPermission = await bcSdk.grant({
         "addresses": newAddress.response[0].address,
-        "permissions": "connect,send,receive"
+        "permissions": "send,receive"
       })
 
       const login = await new user({

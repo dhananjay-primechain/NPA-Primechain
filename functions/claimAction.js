@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 const mongoose = require('mongoose');
 
-exports.claimAction = (key ,fromAddress, assetName) => {
+exports.claimAction = (key ,fromAddress, assetName , offerAssetName) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside claimAction asset")
     
@@ -22,7 +22,7 @@ exports.claimAction = (key ,fromAddress, assetName) => {
         
     let secondunspent = await bcSdk.prepareLockUnspentFrom({
       from: fromAddress,
-      assets: assetName
+      assets: offerAssetName
     })
 
     let appendRaw = await bcSdk.appendRawExchange({
