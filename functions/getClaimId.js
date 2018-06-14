@@ -11,7 +11,7 @@ exports.getClaimId = (assetName) => {
 
       .then((res) => {
         for (let i = 0; i < res.length; i++) {
-          if (res[i].status != "cancelled" && res[i].status !="Approved" && res[i].status !="Rejected") {
+          if (res[i].status != "cancelled" && res[i].status !="Accepted" && res[i].status !="Rejected") {
             claimIds.push({
               emailId: res[i].emailId,
               address: res[i].address,

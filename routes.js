@@ -16,6 +16,8 @@ const login = require('./functions/login');
 const cancelBid = require('./functions/cancelBid');
 const viewMyBalance = require('./functions/viewMyBalance');
 const updateStatus = require('./functions/updateStatus');
+const acceptedBids = require ('./functions/acceptedBids');
+const rejectedBids = require ('./functions/rejectedBids');
 // endpoints will be exposed to all web application
 module.exports = router => {
 
@@ -79,7 +81,7 @@ module.exports = router => {
       viewBids.viewBids()
         .then(function (result) {
           return res.status(200).json({
-            "data": result.query
+            "data": result.query,
           });
         })
         .catch(err => res.status(err.status).json({
@@ -318,10 +320,10 @@ module.exports = router => {
 
     if (1 == 1) {
 
-      // const requestid1 = checkToken(req);
-      // const emailId = requestid1;
-      // console.log(emailId)
-      viewMyBalance.viewMyBalance()
+      const requestid1 = checkToken(req);
+      const address = requestid1;
+      console.log(address)
+      viewMyBalance.viewMyBalance(address)
 
         .then(result => {
           res.status(result.status).json({
@@ -364,7 +366,54 @@ module.exports = router => {
         }));
     }
 
+  })
 
+  router.post('/api/v-1.0/viewAcceptedBids',(req,res)=>{
+
+    var assetName = req.body.assetName;
+    if (!assetName) {
+      res.status(400).json({
+        message: 'Invalid Request'
+      });
+    } else {
+
+      acceptedBids.acceptedBids(assetName)
+
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+
+          })
+        })
+
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
+    }
+  })
+
+  router.post('/api/v-1.0/viewRejectedBids',(req,res)=>{
+
+    var address = req.body.address;
+    if (!address) {
+      res.status(400).json({
+        message: 'Invalid Request'
+      });
+    } else {
+
+      rejectedBids.rejectedBids(address)
+
+        .then(result => {
+          res.status(result.status).json({
+            message: result.query
+
+          })
+        })
+
+        .catch(err => res.status(err.status).json({
+          message: err.message
+        }));
+    }
   })
   function checkToken(req) {
 

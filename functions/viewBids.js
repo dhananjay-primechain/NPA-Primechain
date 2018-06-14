@@ -4,37 +4,46 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
-
+var async = require('async');
 exports.viewBids = () => {
   return new Promise(async function(resolve, reject) {
     console.log("inside viewBids asset")
     var assetDetails = [];
 
-    let AuctionResponse = await bcSdk.listAssets({
-      })
+    let AuctionResponse = await bcSdk.listAssets({})
 
-      .then((res) => {
-        console.log(res)
-        for (let i = 0; i < res.response.length; i++) {
-
-          if(res.response[i].name=="Transaction Tokens"){
-            console.log("skipped TransactionToken")
+      .then((AuctionResponse) => {
+        console.log(AuctionResponse)
+        var bidsList = AuctionResponse.response;
+        console.log(bidsList)
+        async.forEach(bidsList, (item, callback) => {
+          if (item.name != "Transaction Tokens") {
+            assetDetails.push({
+              "name": item.name,
+              "issuers": item.issues[0].issuers[0],
+              "issuetxid": item.issuetxid,
+              "assetref": item.assetref,
+              "issuedqty": item.issueqty,
+              "units": item.units,
+              "subscribed": item.subscribed
+            })
+            callback();
           } else {
-          assetDetails.push({
-            "name": res.response[i].name,
-            "issuers": res.response[i].issues[0].issuers[0],
-            "issuetxid": res.response[i].issuetxid,
-            "assetref": res.response[i].assetref,
-            "issuedqty": res.response[i].issueqty,
-            "units": res.response[i].units,
-            "subscribed": res.response[i].subscribed
-          })
-        }
-        }
+            callback();
+          }
 
-        return resolve({
-          status: 200,
-          query: assetDetails
+        }, (err) => {
+          if (err) {
+            return resolve({
+              status: 404,
+              query: "data is not found"
+            })
+          }
+
+          return resolve({
+            status: 200,
+            query: assetDetails,
+          })
         })
       })
 

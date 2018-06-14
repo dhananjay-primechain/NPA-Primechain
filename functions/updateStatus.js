@@ -2,7 +2,7 @@
 
 const bids = require('../models/bids');
 
-exports.rejectClaim = (key) => {
+exports.updateStatus = (key) => {
   return new Promise(async function(resolve, reject) {
     
     const bidStatus = await bids.findOneAndUpdate({

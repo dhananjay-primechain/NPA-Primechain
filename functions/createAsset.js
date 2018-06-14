@@ -51,6 +51,8 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity) => {
     })
 
     let data = await {
+      fromAddress : fromAddress,
+      toAddress : toAddress,
       assetName: assetRef.response[0].name,
       amount: assetRef.response[0].issueqty,
       transactionId: assetRef.response[0].issuetxid,
