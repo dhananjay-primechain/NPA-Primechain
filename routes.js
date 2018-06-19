@@ -49,11 +49,11 @@ module.exports = router => {
   // api/v-1.0/createAssets will create assets and autosubscribe it.
   router.post('/api/v-1.0/createAssets', multipartMiddleware,(req, res) => {
 
-    var fromAddress = "1JbSWztGVtrFRReUBhatBidNbsZ4DsaFWYuFEE";
-    var toAddress = "4QhTfQnQJkHUjuxGxMi8iR6BHMEFVDvjfowiQo";
-    var assetName = "JEEP";
-    var quantity = 1000;
-    var assetHolder = "DJ";
+    var fromAddress = req.body.fromAddress;
+    var toAddress = req.body.toAddress;
+    var assetName = req.body.assetName;
+    var quantity = req.body.quantity;
+    var assetHolder = req.body.assetHolder;
     // var amount = req.body.amount;
     var file = req.files.file;
     // exception logic to check any parameter is missing.
