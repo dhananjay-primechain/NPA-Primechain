@@ -1,69 +1,83 @@
 'use strict';
 
+const balance = require('../models/balance');
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 var async = require('async');
+
 exports.viewBids = () => {
-  return new Promise(async function(resolve, reject) {
-    console.log("inside viewBids asset")
-    var assetDetails = [];
+    return new Promise(async function (resolve, reject) {
+        var assetDetails = [];
 
-    let AuctionResponse = await bcSdk.listAssets({})
 
-      .then((AuctionResponse) => {
-        console.log(AuctionResponse)
-        var bidsList = AuctionResponse.response;
-        console.log(bidsList)
-        async.forEach(bidsList, (item, callback) => {
-          if (item.name != "Transaction Tokens") {
-            assetDetails.push({
-              "name": item.name,
-              "issuers": item.issues[0].issuers[0],
-              "issuetxid": item.issuetxid,
-              "assetref": item.assetref,
-              "issuedqty": item.issueqty,
-              "units": item.units,
-              "subscribed": item.subscribed
-            })
-            callback();
-          } else {
-            callback();
-          }
-
-        }, (err) => {
-          if (err) {
-            return resolve({
-              status: 404,
-              query: "data is not found"
-            })
-          }
-
-          return resolve({
-            status: 200,
-            query: assetDetails,
-          })
+        let getAllAssets = await bcSdk.listStreamItems({
+            stream: "ASSET_DETAILS_STREAM"
         })
-      })
 
-      .catch(err => {
+            .then((getAllAssets) => {
+                console.log(getAllAssets)
+                async.forEach(getAllAssets.response, (item, callback) => {
+                    var dataJson = JSON.parse(item.data)
+                    bcSdk.importAddress({
+                        address: dataJson.toAddress
+                    })
+                    bcSdk.getAddressBalances({
+                        address: dataJson.toAddress
+                    }).then((res) => {
+                        var allAssets = res.response;
+                        allAssets.forEach(element => {
+                            if (dataJson.assetName == element.name) {
+                                assetDetails.push({
+                                    fromAddress: dataJson.fromAddress,
+                                    toAddress: dataJson.toAddress,
+                                    assetName: dataJson.assetName,
+                                    assetHolder: dataJson.assetHolder,
+                                    issuedQty: dataJson.issuedQty,
+                                    transactionId: dataJson.transactionId,
+                                    assetref: dataJson.assetref,
+                                    availableQty: element.qty,
+                                    document_hash: dataJson.document_hash,
+                                    document_txid: dataJson.document_txid
+                                })
+                            }
+                            
+                        });
+                        callback();
 
-        if (err.code == 401) {
+                    });
 
-          return reject({
-            status: 401,
-            message: 'cant fetch !'
-          });
+                }, (err) => {
+                    if (err) {
+                        return resolve({
+                            status: 404,
+                            claimId: "data not found"
+                        })
+                    }
 
-        } else {
-          console.log("error occurred" + err);
+                    return resolve({
+                        status: 200,
+                        claimId: assetDetails,
+                    })
+                })
+             
+                console.log(assetDetails)
 
-          return reject({
-            status: 500,
-            message: 'Internal Server Error !'
-          });
-        }
-      })
-  })
-};
+                // return resolve({
+                //   status: 201,
+                //   claimId: claimIds
+                // })
+            })
+        
+            .catch(err => {
+
+                console.log("error occurred" + err);
+
+                return reject({
+                    status: 500,
+                    claimId: 'Internal Server Error !'
+                });
+            })
+        })
+    };

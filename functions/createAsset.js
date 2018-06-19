@@ -4,9 +4,9 @@ var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
+const crypto = require("crypto");
 
-
-exports.createBid = (fromAddress, toAddress, assetName, quantity) => {
+exports.createBid = (fromAddress, toAddress, assetName, assetHolder, quantity , file) => {
   return new Promise(async function (resolve, reject) {
     console.log("inside create asset")
     // issues an asset to addressses with its quantity and units.
@@ -23,28 +23,24 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity) => {
 
     let subscribeStream = await bcSdk.subscribe({
       // change before push "ENTITY_MASTERLIST_STREAM"
-      stream: "ENTITY_MASTERLIST_STREAM"
+      stream: "ASSET_DETAILS_STREAM"
     })
 
-    // let subscribeMAsterStream = await bcSdk.subscribe({
-    //   stream: "ASSET_MASTERLIST_STREAM"
-    // })
+    let subscribeMAsterStream = await bcSdk.subscribe({
+      stream: "ASSET_MASTERLIST_STREAM"
+    })
 
-    // let formDetails = await bcSdk.publishFormData({
-    //   formData: formData,
-    //   key: key,
-    //   address: toAddress,
-    //   data_stream_name: "ENTITY_MASTER_STREAM",
-    //   files = null,
-    //   file_stream_name = "ASSET_MASTERLIST_STREAM"
-    // })
-
-    // let uploadDocs_Blockchain = await bcSdk.publishRawHex({
-    //   key: assetName,
-    //   value: hexfile,
-    //   stream: "ASSET_MASTERLIST_STREAM"
-
-    // })
+    let fileInfo = await{
+      name: file.name,
+      mimetype: file.type,
+      data: Buffer.from(file.path).toString('hex')
+    }
+    let fileKey =  await crypto.createHash('sha256').update(file.path).digest('hex')
+    let formDetails = await bcSdk.publish({
+     stream : "ASSET_MASTERLIST_STREAM",
+     key : fileKey,
+     value : JSON.stringify(fileInfo)
+    })
 
     let assetRef = await bcSdk.listAssetsbyName({
       asset: assetName
@@ -54,15 +50,18 @@ exports.createBid = (fromAddress, toAddress, assetName, quantity) => {
       fromAddress : fromAddress,
       toAddress : toAddress,
       assetName: assetRef.response[0].name,
-      amount: assetRef.response[0].issueqty,
+      assetHolder : assetHolder,
+      issuedQty: assetRef.response[0].issueqty,
       transactionId: assetRef.response[0].issuetxid,
-      assetref: assetRef.response[0].assetref
-    }
+      assetref: assetRef.response[0].assetref,
+      document_hash : fileKey,
+      document_txid : formDetails.response
+      }
 
     let publishToBlockchain = await bcSdk.publish({
       key: toAddress,
       value: JSON.stringify(data),
-      stream: "ENTITY_MASTERLIST_STREAM"
+      stream: "ASSET_DETAILS_STREAM"
     }).then((publishToBlockchain) => {
       console.log("blockchain params " + JSON.stringify(publishToBlockchain))
 

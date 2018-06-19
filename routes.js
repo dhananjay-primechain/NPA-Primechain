@@ -2,6 +2,8 @@
 var express = require('express');
 var router = express.Router();
 var cors = require('cors');
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
 // functions path
 const createBid = require('./functions/createAsset')
 const claimAction = require('./functions/claimAction');
@@ -45,21 +47,22 @@ module.exports = router => {
   })
 
   // api/v-1.0/createAssets will create assets and autosubscribe it.
-  router.post('/api/v-1.0/createAssets', (req, res) => {
+  router.post('/api/v-1.0/createAssets', multipartMiddleware,(req, res) => {
 
-    var fromAddress = req.body.fromAddress;
-    var toAddress = req.body.toAddress;
-    var assetName = req.body.assetName;
-    var quantity = req.body.quantity;
+    var fromAddress = "1JbSWztGVtrFRReUBhatBidNbsZ4DsaFWYuFEE";
+    var toAddress = "4QhTfQnQJkHUjuxGxMi8iR6BHMEFVDvjfowiQo";
+    var assetName = "JEEP";
+    var quantity = 1000;
+    var assetHolder = "DJ";
     // var amount = req.body.amount;
-    // var hexfile = req.body.file;
+    var file = req.files.file;
     // exception logic to check any parameter is missing.
-    if (!assetName || !fromAddress || !toAddress || !quantity) {
+    if (!assetName || !fromAddress || !toAddress || !quantity || !assetHolder || !file) {
       res.status(400).json({
         message: 'Invalid Request'
       });
     } else {
-      createBid.createBid(fromAddress, toAddress, assetName, quantity)
+      createBid.createBid(fromAddress, toAddress, assetName, assetHolder, quantity , file)
 
         .then(result => {
           res.status(result.status).json({
@@ -81,7 +84,7 @@ module.exports = router => {
       viewBids.viewBids()
         .then(function (result) {
           return res.status(200).json({
-            "data": result.query,
+            "data": result.claimId,
           });
         })
         .catch(err => res.status(err.status).json({
@@ -394,14 +397,14 @@ module.exports = router => {
 
   router.post('/api/v-1.0/viewRejectedBids',(req,res)=>{
 
-    var address = req.body.address;
-    if (!address) {
+    var assetName = req.body.assetName;
+    if (!assetName) {
       res.status(400).json({
         message: 'Invalid Request'
       });
     } else {
 
-      rejectedBids.rejectedBids(address)
+      rejectedBids.rejectedBids(assetName)
 
         .then(result => {
           res.status(result.status).json({
