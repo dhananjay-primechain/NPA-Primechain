@@ -10,8 +10,12 @@ var async = require('async');
 exports.viewBids = () => {
     return new Promise(async function (resolve, reject) {
         var assetDetails = [];
-
-
+        let subscribeStream = await bcSdk.subscribe({
+            stream: "ASSET_DETAILS_STREAM"
+        })
+        let subscribeStreams = await bcSdk.subscribe({
+            stream: "ASSET_MASTERLIST_STREAM"
+        })
         let getAllAssets = await bcSdk.listStreamItems({
             stream: "ASSET_DETAILS_STREAM"
         })
