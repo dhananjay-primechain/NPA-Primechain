@@ -8,7 +8,7 @@ const uuidv4 = require('uuid/v4');
 const bids = require ('../models/bids');
 const user = require('../models/users');
 
-exports.placeBid = (emailId, assetName, offerAsset) => {
+exports.placeBid = (emailId,assetHolder, assetName, offerAsset) => {
   return new Promise(async function(resolve, reject) {
     console.log("inside create asset")
 
@@ -57,6 +57,7 @@ exports.placeBid = (emailId, assetName, offerAsset) => {
     const placeBid = await new bids({
             emailId : getAddress.emailId,
             address : getAddress.address,
+            assetHolder : assetHolder,
             claimId : claimId,
             assetName :asset_Ref,
             offerAsset : offer_Asset,

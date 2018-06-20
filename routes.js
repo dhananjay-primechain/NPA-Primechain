@@ -55,7 +55,7 @@ module.exports = router => {
     var quantity = req.body.quantity;
     var assetHolder = req.body.assetHolder;
     // var amount = req.body.amount;
-    var file = req.files.file;
+    var file = req.body.file;
     // exception logic to check any parameter is missing.
     if (!assetName || !fromAddress || !toAddress || !quantity || !assetHolder || !file) {
       res.status(400).json({
@@ -217,6 +217,8 @@ module.exports = router => {
 
     var offerAsset = req.body.offer_assets;
 
+    var assetHolder = req.body.assetHolder;
+
     // exception logic to check any parameter is missing.
 
     if (!assetName || !emailId || !offerAsset) {
@@ -225,7 +227,7 @@ module.exports = router => {
       });
     } else {
 
-      placeBid.placeBid(emailId, assetName, offerAsset)
+      placeBid.placeBid(emailId, assetHolder, assetName, offerAsset)
 
         .then(result => {
           res.status(result.status).json({
