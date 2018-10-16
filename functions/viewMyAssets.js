@@ -8,9 +8,8 @@ var async = require('async');
 
 exports.viewMyAssets = (address) => {
   return new Promise(async function (resolve, reject) {
-    console.log("inside viewMyassets")
     var assetDetails = [];
-    
+
     let subscribeStream = await bcSdk.subscribe({
       // change before push "ENTITY_MASTERLIST_STREAM"
       stream: "ENTITY_MASTERLIST_STREAM"
@@ -20,15 +19,16 @@ exports.viewMyAssets = (address) => {
       key: address,
       stream: "ENTITY_MASTERLIST_STREAM"
     })
-    
+
       .then((AuctionResponse) => {
         async.forEach(AuctionResponse, (item, callback) => {
           let data_JSON = JSON.parse(item["data"])
-          if (item["data"] != null && data_JSON.assetName !="Transaction Tokens") {
+          if (item["data"] != null && data_JSON.assetName != "Transaction Tokens") {
             assetDetails.push({
               "name": data_JSON.assetName,
               "issuersAddress": item.publishers,
-              "issuedqty": data_JSON.amount,
+              "assetHolder": item.assetHolder,
+              "issuedqty": data_JSON.issuedQty,
               "assetRef": data_JSON.assetref
             })
             callback();
@@ -47,46 +47,11 @@ exports.viewMyAssets = (address) => {
             query: assetDetails
           })
         })
-
-        // for (let i = 0; i <= AuctionResponse.length; i++) {
-        //   let data_JSON = JSON.parse(AuctionResponse[i]);
-        //   console.log(data_JSON)
-        //   if (AuctionResponse[i].key == address) {
-        //     assetDetails.push({
-        //       "name": data_JSON.assetName,
-        //       "issuersAddress": data_JSON.publishers,
-        //       "issuedqty": data_JSON.amount,
-        //       "assetRef": data_JSON.assetref
-        //     })
-        //     console.log("data in array------>",assetDetails)
-        //   } else {
-        //     console.log("no Assets found")
-        //   }
-        // }
-
-        // return resolve({
-        //   status: 200,
-        //   query: assetDetails
-        // })
-      })
-
-      .catch(err => {
-
-        if (err.code == 401) {
-
-          return reject({
-            status: 401,
-            message: 'cant fetch !'
-          });
-
-        } else {
-          console.log("error occurred" + err);
-
-          return reject({
-            status: 500,
-            message: 'Internal Server Error !'
-          });
-        }
+      }).catch(err => {
+        return reject({
+          status: 401,
+          message: err.message
+        });
       })
   })
 };

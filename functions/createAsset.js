@@ -6,9 +6,9 @@ var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 const crypto = require("crypto");
 
-exports.createBid = (fromAddress, toAddress, assetName, assetHolder, quantity , file) => {
+exports.createBid = (fromAddress, toAddress, assetName, assetHolder, quantity, file) => {
   return new Promise(async function (resolve, reject) {
-    console.log("inside create asset")
+
     // issues an asset to addressses with its quantity and units.
     let issue = await bcSdk.issueFrom({
       from: fromAddress,
@@ -30,16 +30,16 @@ exports.createBid = (fromAddress, toAddress, assetName, assetHolder, quantity , 
       stream: "ASSET_MASTERLIST_STREAM"
     })
 
-    let fileInfo = await{
+    let fileInfo = await {
       name: file.name,
       mimetype: file.type,
       data: Buffer.from(file.path).toString('hex')
     }
-    let fileKey =  await crypto.createHash('sha256').update(file.path).digest('hex')
+    let fileKey = await crypto.createHash('sha256').update(file.path).digest('hex')
     let formDetails = await bcSdk.publish({
-     stream : "ASSET_MASTERLIST_STREAM",
-     key : fileKey,
-     value : JSON.stringify(fileInfo)
+      stream: "ASSET_MASTERLIST_STREAM",
+      key: fileKey,
+      value: JSON.stringify(fileInfo)
     })
 
     let assetRef = await bcSdk.listAssetsbyName({
@@ -47,23 +47,22 @@ exports.createBid = (fromAddress, toAddress, assetName, assetHolder, quantity , 
     })
 
     let data = await {
-      fromAddress : fromAddress,
-      toAddress : toAddress,
+      fromAddress: fromAddress,
+      toAddress: toAddress,
       assetName: assetRef.response[0].name,
-      assetHolder : assetHolder,
+      assetHolder: assetHolder,
       issuedQty: assetRef.response[0].issueqty,
       transactionId: assetRef.response[0].issuetxid,
       assetref: assetRef.response[0].assetref,
-      document_hash : fileKey,
-      document_txid : formDetails.response
-      }
+      document_hash: fileKey,
+      document_txid: formDetails.response
+    }
 
     let publishToBlockchain = await bcSdk.publish({
       key: toAddress,
       value: JSON.stringify(data),
       stream: "ASSET_DETAILS_STREAM"
     }).then((publishToBlockchain) => {
-      console.log("blockchain params " + JSON.stringify(publishToBlockchain))
 
       return resolve({
         status: 200,
@@ -73,21 +72,10 @@ exports.createBid = (fromAddress, toAddress, assetName, assetHolder, quantity , 
 
       .catch(err => {
 
-        if (err.code == 401) {
-
-          return reject({
-            status: 401,
-            message: 'cant fetch !'
-          });
-
-        } else {
-          console.log("error occurred" + err);
-
-          return reject({
-            status: 500,
-            message: 'Internal Server Error !'
-          });
-        }
+        return reject({
+          status: 401,
+          message: err.message
+        });
       })
   })
 };

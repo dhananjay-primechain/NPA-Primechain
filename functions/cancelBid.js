@@ -1,45 +1,41 @@
 'use strict';
 
 const bids = require('../models/bids');
-const bcsdk = require ('multichainsdk');
+const bcsdk = require('multichainsdk');
 
 exports.cancelBid = (claimId) => {
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
 
-    let claimId_Details = await  bids.find({
-        "claimId": claimId
-      })
-  
+    let claimId_Details = await bids.find({
+      "claimId": claimId
+    })
+
     const bidStatus = await bids.findOneAndUpdate({
       "claimId": claimId
     }, {
         $set: {
-            "status": "cancelled"
+          "status": "cancelled"
         }
-    })
+      })
 
     let unlockTransaction = await bcsdk.lockUnspent({
-      transactionId : claimId_Details[0]._doc.txid,
-      vout:claimId_Details[0]._doc.vout
+      transactionId: claimId_Details[0]._doc.txid,
+      vout: claimId_Details[0]._doc.vout
     })
 
-    .then((unlockTransaction) => {
-          console.log(unlockTransaction)
+      .then((unlockTransaction) => {
 
-          return resolve({
-            status: 201,
-            query: unlockTransaction
-          })
+        return resolve({
+          status: 201,
+          query: unlockTransaction
         })
-    })
+      })
+  })
 
     .catch(err => {
-
-      console.log("error occurred" + err);
-
       return reject({
-        status: 500,
-        message: 'Internal Server Error !'
+        status: 401,
+        message: err.message
       });
     })
 

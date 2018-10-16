@@ -42,14 +42,13 @@ exports.viewBids = () => {
                                     transactionId: dataJson.transactionId,
                                     assetref: dataJson.assetref,
                                     availableQty: element.qty,
-                                    document_hash: dataJson.document_hash,
+                                    document_hash: dataJson.document_hash.asset_document,
                                     document_txid: dataJson.document_txid
                                 })
                             }
-                            
+
                         });
                         callback();
-
                     });
 
                 }, (err) => {
@@ -59,29 +58,18 @@ exports.viewBids = () => {
                             claimId: "data not found"
                         })
                     }
-
                     return resolve({
                         status: 200,
                         claimId: assetDetails,
                     })
                 })
-             
-                console.log(assetDetails)
-
-                // return resolve({
-                //   status: 201,
-                //   claimId: claimIds
-                // })
             })
-        
+
             .catch(err => {
-
-                console.log("error occurred" + err);
-
                 return reject({
-                    status: 500,
-                    claimId: 'Internal Server Error !'
+                    status: 401,
+                    claimId: err.message
                 });
             })
-        })
-    };
+    })
+};

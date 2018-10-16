@@ -6,43 +6,42 @@ var bodyParser = require('body-parser');
 var bcSdk = require('multichainsdk');
 const mongoose = require('mongoose');
 
-exports.claimAction = (key ,fromAddress, assetName , offerAssetName) => {
-  return new Promise(async function(resolve, reject) {
-    console.log("inside claimAction asset")
-    
+exports.claimAction = (key, fromAddress, assetName, offerAssetName) => {
+  return new Promise(async function (resolve, reject) {
+
     let tx_hex = await bcSdk.listStreamKeyItems({
-      key : key,
-      stream :"NPA_CLAIM_STREAM",
-      verbose : true
+      key: key,
+      stream: "NPA_CLAIM_STREAM",
+      verbose: true
 
     })
     let decoderexchangeTX = await bcSdk.decodeRawExchange({
       hexstring: tx_hex.response[0].data
     })
-        
+
     let secondunspent = await bcSdk.prepareLockUnspentFrom({
       from: fromAddress,
       assets: offerAssetName
     })
 
     let appendRaw = await bcSdk.appendRawExchange({
-      hexstring : tx_hex.response[0].data,
-      txid   : secondunspent.response.txid,
-      vout   : secondunspent.response.vout,
-      assets : assetName
+      hexstring: tx_hex.response[0].data,
+      txid: secondunspent.response.txid,
+      vout: secondunspent.response.vout,
+      assets: assetName
     })
-    
+
     const bidStatus = await bids.findOneAndUpdate({
       "claimId": key
     }, {
         $set: {
-            "status": "Approved"
+          "status": "Approved"
         }
-    })
+      })
     let completeTx = await bcSdk.sendRawTransaction({
-      hexstring : appendRaw.response.hex
+      hexstring: appendRaw.response.hex
     })
-    
+
       .then((completeTx) => {
         return resolve({
           status: 200,
@@ -51,19 +50,10 @@ exports.claimAction = (key ,fromAddress, assetName , offerAssetName) => {
       })
 
       .catch(err => {
-
-        if (err.code == 401) {
-          return reject({
-            status: 401,
-            message: 'cant fetch !'
-          });
-        } else {
-          console.log("error occurred" + JSON.stringify(err));
-          return reject({
-            status: 500,
-            message: 'Internal Server Error !'
-          });
-        }
+        return reject({
+          status: 401,
+          message: err.message
+        });
       })
   })
 };

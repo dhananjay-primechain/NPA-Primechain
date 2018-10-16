@@ -8,25 +8,21 @@ const async = require('async');
 exports.viewMyBalance = (address) => {
   return new Promise(async function (resolve, reject) {
     var tokenBalance = [];
-    // let getAddress = await  user.find({
-    //       "emailId": emailId
-    //     })
-    // console.log("getAddress",getAddress)
+
     let getBalance = await bcSdk.getAddressBalances({
       "address": address
 
     }).then((getBalance) => {
-      console.log("inside Then",getBalance)
       var getBalances = {};
       var address_balances = getBalance.response;
       async.forEach(address_balances, (item, callback) => {
-        console.log(item);
         if (item && item["name"] === "Transaction Tokens") {
           getBalances["name"] = item["name"];
           getBalances["quantity"] = item["qty"];
           callback();
         }
         else {
+
           callback();
         }
       }, (err) => {
@@ -36,35 +32,32 @@ exports.viewMyBalance = (address) => {
             message: 'cant fetch !'
           });
         }
-        return resolve({
-          status: 200,
-          query: getBalances
-        })
+        if (Object.keys(getBalances).length > 0) {
+          return resolve({
+            status: 200,
+            query: getBalances
+          })
+        } else {
+          let zeroQuantity = {
+            name: "eg",
+            quantity: "0"
+          };
+
+          return resolve({
+            status: 200,
+            query: zeroQuantity
+          })
+        }
       });
-
-      console.log("blockchain params " + JSON.stringify(getBalance))
-
       return resolve({
         status: 200,
         query: getBalance
       })
     }).catch(err => {
-
-      if (err.code == 401) {
-
-        return reject({
-          status: 401,
-          message: 'cant fetch !'
-        });
-
-      } else {
-        console.log("error occurred" + err);
-
-        return reject({
-          status: 500,
-          message: 'Internal Server Error !'
-        });
-      }
+      return reject({
+        status: 401,
+        message: err.message
+      });
     })
   })
 

@@ -7,7 +7,7 @@ var bcSdk = require('multichainsdk');
 const user = require('../models/users');
 
 exports.login = (emailId) => {
-  return new Promise(async function(resolve, reject) {
+  return new Promise(async function (resolve, reject) {
     console.log("inside login function")
 
     let newUser = await user.find({
@@ -30,44 +30,26 @@ exports.login = (emailId) => {
       login.save()
 
       let grantWritePermission = await bcSdk.grant({
-          "addresses": newAddress.response[0].address,
-          "permissions": "NPA_CLAIM_STREAM.write"
+        "addresses": newAddress.response[0].address,
+        "permissions": "NPA_CLAIM_STREAM.write"
       })
 
         .then((newAddress) => {
-          console.log("blockchain params " + JSON.stringify(newAddress))
-
           return resolve({
             status: 200,
             query: newAddress.response[0].address
           })
+        }).catch(err => {
+          return reject({
+            status: 401,
+            message: err.message
+          });
         })
-
-        .catch(err => {
-
-          if (err.code == 401) {
-
-            return reject({
-              status: 401,
-              message: 'cant fetch !'
-            });
-
-          } else {
-            console.log("error occurred" + err);
-
-            return reject({
-              status: 500,
-              message: 'Internal Server Error !'
-            });
-          }
-        })
-
     } else {
       return resolve({
         status: 200,
         query: newUser[0].address
       })
     }
-    console.log("Login Function")
   })
 };

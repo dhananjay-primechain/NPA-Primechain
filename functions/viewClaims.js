@@ -7,15 +7,14 @@ var bcSdk = require('multichainsdk');
 
 
 exports.viewClaims = (assetName) => {
-  return new Promise(async function(resolve, reject) {
-    console.log("inside claimAction asset")
+  return new Promise(async function (resolve, reject) {
     var assetDetails = [];
     let AuctionResponse = await bcSdk.listAssetsbyName({
-        asset: assetName
-      })
+      asset: assetName
+    })
 
       .then((res) => {
-        console.log(res)
+
         for (let i = 0; i < res.response.length; i++) {
           assetDetails.push({
             "name": res.response[i].name,
@@ -35,22 +34,10 @@ exports.viewClaims = (assetName) => {
       })
 
       .catch(err => {
-
-        if (err.code == 401) {
-
-          return reject({
-            status: 401,
-            message: 'cant fetch !'
-          });
-
-        } else {
-          console.log("error occurred" + err);
-
-          return reject({
-            status: 500,
-            message: 'Internal Server Error !'
-          });
-        }
+        return reject({
+          status: 401,
+          message: err.message
+        });
       })
   })
 };

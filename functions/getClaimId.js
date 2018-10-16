@@ -17,6 +17,7 @@ exports.getClaimId = (assetName) => {
               address: res[i].address,
               claimId: res[i].claimId,
               assetName: res[i].assetName,
+              assetHolder : res[i].assetHolder,
               offerAsset: res[i].offerAsset,
               bidAmount: res[i].bidAmount,
               offerAmount: res[i].offerAmount,
